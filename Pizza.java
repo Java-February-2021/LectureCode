@@ -25,6 +25,7 @@ public class Pizza {
     this.size = "Extra Extra Large";
     this.slices = 18;
     this.toppings = toppings;
+    numOfPizzas++;
   }
 
   // Getter Methods
