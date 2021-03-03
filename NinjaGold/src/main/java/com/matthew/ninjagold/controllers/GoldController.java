@@ -1,9 +1,12 @@
 package com.matthew.ninjagold.controllers;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpSession;
 
@@ -42,7 +45,20 @@ public class GoldController {
 		ArrayList<String> activity = (ArrayList<String>)session.getAttribute("activity");
 		int goldThisTurn = 0;
 		//((max - min) + 1 ) + min;
-		
+	    try {
+	        SimpleDateFormat format = new SimpleDateFormat("dd/mm/yy h:mm");
+	        Date past = format.parse("02/24/2021 12:30");
+	        Date noww = new Date();
+	        System.out.println(noww.getTime());
+
+	        System.out.println(TimeUnit.MILLISECONDS.toMillis(noww.getTime() - past.getTime()) + " milliseconds ago");
+	        System.out.println(TimeUnit.MILLISECONDS.toMinutes(noww.getTime() - past.getTime()) + " minutes ago");
+	        System.out.println(TimeUnit.MILLISECONDS.toHours(noww.getTime() - past.getTime()) + " hours ago");
+	        System.out.println(TimeUnit.MILLISECONDS.toDays(noww.getTime() - past.getTime()) + " days ago");
+	    }
+	    catch (Exception j){
+	        j.printStackTrace();
+	    }
 		if(building.equals("farm")) {
 			goldThisTurn = r.nextInt((20-10) + 1) + 10;
 			activity.add(String.format("You entered a farm and earned %d gold %s \n", goldThisTurn, formatter.format(now)));
@@ -59,6 +75,8 @@ public class GoldController {
 			} else {
 			activity.add(String.format("You entered a casino and lost %d gold. Ouch %s  \n", goldThisTurn, formatter.format(now)));
 			}
+			
+			// If (condition) ? do Something : (else) do something else
 }
 		
 		int totalGold = gold + goldThisTurn;
