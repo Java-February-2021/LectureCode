@@ -30,6 +30,12 @@ public class TeamService {
 		return this.tRepo.save(newTeam);
 	}
 	
+	// Create Team with Request Param (Normal HTML Forms)
+	public Team createTeamHTML(String name, String city, int players) {
+		Team newTeam = new Team(name, city, players);
+		return this.tRepo.save(newTeam);
+	}
+	
 	// Delete
 	public void deleteTeam(Long id) {
 		this.tRepo.deleteById(id);

@@ -7,18 +7,20 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.matthew.football.models.Team;
 import com.matthew.football.services.TeamService;
 
 @RestController
-public class MainController {
+@RequestMapping("/api")
+public class APIController {
 	@Autowired
 	private TeamService tService;
 	
 	
-	@GetMapping("/")
+	@GetMapping("")
 	public List<Team> index() {
 		return this.tService.getAllTeams();
 	}
