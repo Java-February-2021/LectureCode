@@ -2,11 +2,14 @@ package com.matthew.football.models;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
@@ -34,6 +37,8 @@ public class Team {
 	private Date createdAt;
 	@DateTimeFormat(pattern = "yyy-MM-DD HH:mm:ss")
 	private Date updatedAt;
+	@OneToOne(mappedBy="team", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	private Mascot mascot;
 	
 	@PrePersist
 	protected void onCreate() {
@@ -95,6 +100,14 @@ public class Team {
 
 	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = updatedAt;
+	}
+
+	public Mascot getMascot() {
+		return mascot;
+	}
+
+	public void setMascot(Mascot mascot) {
+		this.mascot = mascot;
 	}
 	
 	

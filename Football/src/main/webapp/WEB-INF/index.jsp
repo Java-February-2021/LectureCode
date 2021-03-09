@@ -25,7 +25,7 @@
 <c:forEach items="${allTeams}" var="team">
 <tr>
 <td><c:out value="${team.id}"/></td>
-<td><c:out value="${team.name}"/></td>
+<td><a href="/${team.id}"><c:out value="${team.name}"/></a></td>
 <td><c:out value="${team.city}"/></td>
 <td><c:out value="${team.players}"/></td>
 </tr>

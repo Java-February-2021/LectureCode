@@ -38,6 +38,7 @@ public class APIController {
 		
 	}
 	
+	
 	@DeleteMapping("/team/{id}")
 	public String removeTeam(@PathVariable("id") Long id) {
 		this.tService.deleteTeam(id);

@@ -35,6 +35,7 @@
 <p>${err}</p>
 </c:forEach>
 <hr>
+
 <form action="/add" method="POST">
 <div class="form-group">
 <label for="name">Team Name</label>

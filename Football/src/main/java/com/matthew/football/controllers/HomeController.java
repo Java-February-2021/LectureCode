@@ -11,17 +11,23 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.matthew.football.models.Mascot;
 import com.matthew.football.models.Team;
+import com.matthew.football.services.MascotService;
 import com.matthew.football.services.TeamService;
 
 @Controller
 public class HomeController {
 	@Autowired
 	private TeamService tService;
+	@Autowired
+	private MascotService mService;
+	
 	// @RequestMapping(value="/" method=RequestMethod.GET)
 	// @RequestMapping(value="/" method=RequestMethod.POST)
 	// @RequestMapping("/")
@@ -46,6 +52,41 @@ public class HomeController {
 			 this.tService.createTeam(team);
 			 return "redirect:/";
 		 }
+	}
+	
+	@GetMapping("/{id}")
+	public String show(@PathVariable("id") Long id, Model viewModel, @ModelAttribute("mascot") Mascot mascot, @ModelAttribute("team") Team team) {
+		viewModel.addAttribute("team", this.tService.getOneTeam(id));
+		return "show.jsp";
+	}
+	
+	@PostMapping("/edit/{id}")
+	public String editTeam(@Valid @ModelAttribute("team") Team team, BindingResult result, Model viewModel, @PathVariable("id") Long id) {
+		if(result.hasErrors()) {
+			viewModel.addAttribute("team", this.tService.getOneTeam(id));
+			return "show.jsp";
+		}
+		this.tService.updateTeam(team);
+		return "redirect:/" + id;
+	}
+	
+	@PostMapping("/mascot/{id}")
+	public String addMascot(@Valid @ModelAttribute("Mascot") Mascot newMascot, BindingResult result, Model viewModel, @PathVariable("id") Long id) {
+		if(result.hasErrors()) {
+			viewModel.addAttribute("team", this.tService.getOneTeam(id));
+			return "show.jsp";
+		}
+		Team teamForMascot = this.tService.getOneTeam(id);
+		newMascot.setTeam(teamForMascot);
+		this.mService.create(newMascot);
+		return "redirect:/" + id;
+		
+	}
+	
+	@GetMapping("/delete/{id}")
+	public String deleteTeam(@PathVariable("id") Long id) {
+		this.tService.deleteTeam(id);
+		return "redirect:/";
 	}
 	
 	@PostMapping("/addHtmlWay")
