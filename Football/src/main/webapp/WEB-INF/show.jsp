@@ -20,6 +20,27 @@
 <p>${team.city}</p>
 <h2># Of Players</h2>
 <p>${team.players}</p>
+<hr>
+<h3>Players On Roster</h3>
+<table class="table table-dark">
+<thead>
+<tr>
+<td>Name</td>
+<td>Number</td>
+<td>Weight</td>
+</tr>
+</thead>
+<tbody>
+<c:forEach items="${team.playersOnTeam}" var="player">
+<tr>
+<td>${player.name}</td>
+<td>${player.number}</td>
+<td>${player.weight}</td>
+</tr>
+</c:forEach>
+
+</tbody>
+</table>
 <c:choose>
 <c:when test="${team.mascot != null }">
 <h2>Mascot</h2>

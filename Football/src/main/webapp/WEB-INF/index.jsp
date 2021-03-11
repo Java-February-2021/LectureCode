@@ -12,7 +12,7 @@
 <body>
 <div class="container">
 <h1>Football dot Com</h1>
-<a href="/add">Add A Team</a>
+<a href="/add">Add A Team</a> | <a href="/player/new">Add A Player</a>
 <hr>
 <table class="table table-striped table-dark">
 <thead>

@@ -1,6 +1,7 @@
 package com.matthew.football.models;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -9,6 +10,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -39,6 +41,9 @@ public class Team {
 	private Date updatedAt;
 	@OneToOne(mappedBy="team", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Mascot mascot;
+	
+	@OneToMany(mappedBy="team", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	private List<Player> playersOnTeam;
 	
 	@PrePersist
 	protected void onCreate() {
@@ -108,6 +113,14 @@ public class Team {
 
 	public void setMascot(Mascot mascot) {
 		this.mascot = mascot;
+	}
+
+	public List<Player> getPlayersOnTeam() {
+		return playersOnTeam;
+	}
+
+	public void setPlayersOnTeam(List<Player> playersOnTeam) {
+		this.playersOnTeam = playersOnTeam;
 	}
 	
 	
