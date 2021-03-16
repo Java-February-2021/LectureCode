@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.matthew.football.models.Team;
+import com.matthew.football.models.User;
 import com.matthew.football.repositories.TeamRepository;
 
 @Service
@@ -44,6 +45,26 @@ public class TeamService {
 	// Delete
 	public void deleteTeam(Long id) {
 		this.tRepo.deleteById(id);
+	}
+	
+	//Add Liker To Football Team
+	public void addLiker(Team team, User user) {
+		// Fetch the list of likers currently from the database
+		List<User> currentLikers = team.getLikers();
+		// Add that user to the arraylist of likers
+		currentLikers.add(user);
+		// Update the database
+		this.tRepo.save(team);
+	}
+	
+	//Remove Liker From Football Team
+	public void removeLiker(Team team, User user) {
+		// Fetch the list of likers currently from the database
+		List<User> currentLikers = team.getLikers();
+		// Add that user to the arraylist of likers
+		currentLikers.remove(user);
+		// Update the database
+		this.tRepo.save(team);
 	}
 	
 }

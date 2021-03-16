@@ -12,22 +12,36 @@
 <body>
 <div class="container">
 <h1>Football dot Com</h1>
-<a href="/add">Add A Team</a> | <a href="/player/new">Add A Player</a>
+<p>Welcome <c:out value="${loggedInUser.fullName}"/></p>
+<a href="/add">Add A Team</a> | <a href="/player/new">Add A Player</a> | <a href="/logout">Logout</a>
 <hr>
 <table class="table table-striped table-dark">
 <thead>
-<td>ID</td>
+<td>Action</td>
 <td>Team Name</td>
 <td>City</td>
 <td>Players</td>
+<td>Number Of Likes</td>
 </thead>
 <tbody>
 <c:forEach items="${allTeams}" var="team">
 <tr>
-<td><c:out value="${team.id}"/></td>
+<td>
+<c:choose>
+<c:when test="${team.likers.contains(loggedInUser)}">
+<a href="/unlike/${team.id}">UnLike</a>
+</c:when>
+<c:otherwise>
+<a href="/like/${team.id}">Like!</a>
+</c:otherwise>
+</c:choose>
+</td>
+
+
 <td><a href="/${team.id}"><c:out value="${team.name}"/></a></td>
 <td><c:out value="${team.city}"/></td>
 <td><c:out value="${team.players}"/></td>
+<td><c:out value="${team.likers.size() }"/></td>
 </tr>
 </c:forEach>
 </tbody>

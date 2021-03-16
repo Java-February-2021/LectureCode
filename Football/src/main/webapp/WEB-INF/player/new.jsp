@@ -43,6 +43,12 @@
     <form:input path="number"/></form:label>
     </div>
     
+            <div class="form-group">
+    <form:label path="date">Number
+    <form:errors path="date"/>
+    <form:input type="date" path="date" /> </form:label>
+    </div>
+    
     <button>Add Player!</button>
 </form:form>
 </div>

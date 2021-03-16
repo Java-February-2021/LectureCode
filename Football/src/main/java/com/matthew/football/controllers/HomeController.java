@@ -3,6 +3,7 @@ package com.matthew.football.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.matthew.football.models.Mascot;
 import com.matthew.football.models.Team;
+import com.matthew.football.models.User;
 import com.matthew.football.services.MascotService;
 import com.matthew.football.services.TeamService;
+import com.matthew.football.services.UserService;
 
 @Controller
 public class HomeController {
@@ -27,6 +30,8 @@ public class HomeController {
 	private TeamService tService;
 	@Autowired
 	private MascotService mService;
+	@Autowired
+	private UserService uService;
 	
 	// @RequestMapping(value="/" method=RequestMethod.GET)
 	// @RequestMapping(value="/" method=RequestMethod.POST)
@@ -34,15 +39,42 @@ public class HomeController {
 	
 	@GetMapping("/")
 	public String index(Model viewModel) {
+		List<User> user = this.uService.allUsers();
+		viewModel.addAttribute("users", user);
+		return "login.jsp";
+	}
+	
+	@PostMapping("/login")
+	public String login(HttpSession session, @RequestParam("user")Long id) {
+		if(session.getAttribute("user__id") == null) {
+			session.setAttribute("user__id", id);
+		}
+		return "redirect:/home";
+	}
+	
+	@GetMapping("/home")
+	public String home(Model viewModel, HttpSession session) {
+		Long userId = (Long)session.getAttribute("user__id");
+		System.out.println(userId);
+		User user = this.uService.find(userId);
 		List<Team> allTeams = this.tService.getAllTeams();
 		viewModel.addAttribute("allTeams", allTeams);
+		viewModel.addAttribute("loggedInUser", user);
 		return "index.jsp";
+	}
+	
+	@GetMapping("/logout")
+	public String logout(HttpSession session) {
+		session.invalidate();
+		return "redirect:/";
 	}
 	
 	@GetMapping("/add")
 	public String add(@ModelAttribute("team") Team team) {
 		return "add.jsp";
 	}
+	
+	
 	
 	@PostMapping("/add")
 	public String addTeam(@Valid @ModelAttribute("team") Team team, BindingResult result) {
@@ -87,6 +119,28 @@ public class HomeController {
 	public String deleteTeam(@PathVariable("id") Long id) {
 		this.tService.deleteTeam(id);
 		return "redirect:/";
+	}
+	
+	
+	@GetMapping("/like/{teamId}")
+	public String like(@PathVariable("teamId") Long teamId, HttpSession session) {
+		// Items from session retrieved all are Objects (from object superclass);
+		Long userId = (Long)session.getAttribute("user__id");
+		Team teamToLike = this.tService.getOneTeam(teamId);
+		User userWhoLikedTeam = this.uService.find(userId);
+		this.tService.addLiker(teamToLike, userWhoLikedTeam);
+		return "redirect:/home"; 		
+	}
+	
+	@GetMapping("/unlike/{teamId}")
+	public String unlike(@PathVariable("teamId") Long teamId, HttpSession session) {
+		// Items from session retrieved all are Objects (from object superclass);
+		Long userId = (Long)session.getAttribute("user__id");
+		Team teamToUnLike = this.tService.getOneTeam(teamId);
+		User userWhoUnLikedTeam = this.uService.find(userId);
+		this.tService.removeLiker(teamToUnLike, userWhoUnLikedTeam);
+		return "redirect:/home"; 
+		
 	}
 	
 	@PostMapping("/addHtmlWay")

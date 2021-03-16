@@ -13,6 +13,12 @@
 <body>
 <div class="container">
 <h2>Details For ${team.name}</h2>
+<h3>Liked By:</h3>
+<ol>
+<c:forEach items="${team.likers}" var="user">
+<li>${user.fullName}</li>
+</c:forEach>
+</ol>
 <hr>
 <h2>Name:</h2>
 <p>${team.name}</p>
@@ -36,6 +42,7 @@
 <td>${player.name}</td>
 <td>${player.number}</td>
 <td>${player.weight}</td>
+<td>${player.date}</td>
 </tr>
 </c:forEach>
 
