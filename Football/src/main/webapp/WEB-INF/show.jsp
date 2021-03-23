@@ -13,6 +13,7 @@
 <body>
 <div class="container">
 <h2>Details For ${team.name}</h2>
+<p><a href="/profile/${team.owner.id}">Owner ${team.owner.fullName}</a></p>
 <h3>Liked By:</h3>
 <ol>
 <c:forEach items="${team.likers}" var="user">
@@ -87,6 +88,7 @@
 </c:choose>
 
 <hr>
+<c:if test="${team.owner.id == user.id }">
 <h3>Edit This Team</h3>
 
 <form:form method="POST" action="/edit/${team.id}" modelAttribute="team">
@@ -107,6 +109,7 @@
 </div>
 <button>Edit Team!</button>
 </form:form>
-
+<a href="/delete/${team.id}" class="btn btn-danger">Delete</a>
+</c:if>
 </body>
 </html>

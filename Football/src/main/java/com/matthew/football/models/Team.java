@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
@@ -33,6 +34,14 @@ public class Team {
 	@Size(min=2, max=100)
 	@NotBlank
 	private String name;
+	public User getOwner() {
+		return owner;
+	}
+
+	public void setOwner(User owner) {
+		this.owner = owner;
+	}
+
 	@NotBlank
 	private String city;
 	@Min(5)
@@ -45,10 +54,15 @@ public class Team {
 	@OneToOne(mappedBy="team", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private Mascot mascot;
 	
+	@ManyToOne(fetch= FetchType.LAZY)
+	@JoinColumn(name="user_id")
+	private User owner;
+	
+	
 	@OneToMany(mappedBy="team", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private List<Player> playersOnTeam;
 	
-	@ManyToMany(fetch=FetchType.LAZY)
+	@ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	@JoinTable(
 			name="likes",
 			joinColumns = @JoinColumn(name="team_id"),

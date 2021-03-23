@@ -23,6 +23,7 @@ import com.matthew.football.models.User;
 import com.matthew.football.services.MascotService;
 import com.matthew.football.services.TeamService;
 import com.matthew.football.services.UserService;
+import com.matthew.football.validators.UserValidator;
 
 @Controller
 public class HomeController {
@@ -32,35 +33,46 @@ public class HomeController {
 	private MascotService mService;
 	@Autowired
 	private UserService uService;
+	@Autowired
+	private UserValidator validator;
 	
 	// @RequestMapping(value="/" method=RequestMethod.GET)
 	// @RequestMapping(value="/" method=RequestMethod.POST)
 	// @RequestMapping("/")
 	
 	@GetMapping("/")
-	public String index(Model viewModel) {
-		List<User> user = this.uService.allUsers();
-		viewModel.addAttribute("users", user);
-		return "login.jsp";
+	public String index(@ModelAttribute("user") User user) {
+		return "landing.jsp";
 	}
 	
-	@PostMapping("/login")
-	public String login(HttpSession session, @RequestParam("user")Long id) {
-		if(session.getAttribute("user__id") == null) {
-			session.setAttribute("user__id", id);
+	
+	@PostMapping("/registration")
+	public String register(@Valid @ModelAttribute("user") User user, BindingResult result, HttpSession session) {
+		validator.validate(user, result);
+		if(result.hasErrors()) {
+			// if there are any validation errors return them directly to the root page
+			return "landing.jsp";
 		}
+		User userThatJustRegistered = this.uService.registerANewUser(user);
+		session.setAttribute("user__id", userThatJustRegistered.getId());
 		return "redirect:/home";
 	}
 	
-	@GetMapping("/home")
-	public String home(Model viewModel, HttpSession session) {
-		Long userId = (Long)session.getAttribute("user__id");
-		System.out.println(userId);
-		User user = this.uService.find(userId);
-		List<Team> allTeams = this.tService.getAllTeams();
-		viewModel.addAttribute("allTeams", allTeams);
-		viewModel.addAttribute("loggedInUser", user);
-		return "index.jsp";
+	@GetMapping("/profile/{id}")
+	public String profile(@PathVariable("id") Long id, Model viewModel) {
+		viewModel.addAttribute("user", this.uService.find(id));
+		return "profile.jsp";
+	}
+	
+	@PostMapping("/login")
+	public String login(HttpSession session, @RequestParam("loginEMail") String email, @RequestParam("loginPAssword") String password, RedirectAttributes redirectAttrs) {
+		if(!this.uService.authenticateUser(email, password)) {
+			redirectAttrs.addFlashAttribute("errorFromLoggingIn", "Invalid Credentials");
+			return "redirect:/";
+		}
+		User user = this.uService.getByEmail(email);
+		session.setAttribute("user__id", user.getId());
+		return "redirect:/home";
 	}
 	
 	@GetMapping("/logout")
@@ -68,6 +80,21 @@ public class HomeController {
 		session.invalidate();
 		return "redirect:/";
 	}
+	
+	@GetMapping("/home")
+	public String home(Model viewModel, HttpSession session) {
+		Long userId = (Long)session.getAttribute("user__id");
+		if(userId == null) {
+			return "redirect:/";
+		}
+		System.out.println(userId);
+		User user = this.uService.find(userId);
+		List<Team> allTeams = this.tService.getAllTeams();
+		viewModel.addAttribute("allTeams", allTeams);
+		viewModel.addAttribute("loggedInUser", user);
+		return "index.jsp";
+	}	
+
 	
 	@GetMapping("/add")
 	public String add(@ModelAttribute("team") Team team) {
@@ -77,23 +104,27 @@ public class HomeController {
 	
 	
 	@PostMapping("/add")
-	public String addTeam(@Valid @ModelAttribute("team") Team team, BindingResult result) {
+	public String addTeam(@Valid @ModelAttribute("team") Team team, BindingResult result, HttpSession session) {
 		if(result.hasErrors()) {
 			return "add.jsp";
 		 } else {
+			 Long userId = (Long)session.getAttribute("user__id");
+			 User userToOwnTeam = this.uService.find(userId);
+			 team.setOwner(userToOwnTeam);
 			 this.tService.createTeam(team);
-			 return "redirect:/";
+			 return "redirect:/home";
 		 }
 	}
 	
 	@GetMapping("/{id}")
-	public String show(@PathVariable("id") Long id, Model viewModel, @ModelAttribute("mascot") Mascot mascot, @ModelAttribute("team") Team team) {
+	public String show(@PathVariable("id") Long id, Model viewModel, @ModelAttribute("mascot") Mascot mascot, @ModelAttribute("team") Team team, HttpSession session) {
 		viewModel.addAttribute("team", this.tService.getOneTeam(id));
+		viewModel.addAttribute("user", this.uService.find((Long)session.getAttribute("user__id")));
 		return "show.jsp";
 	}
 	
 	@PostMapping("/edit/{id}")
-	public String editTeam(@Valid @ModelAttribute("team") Team team, BindingResult result, Model viewModel, @PathVariable("id") Long id) {
+	public String editTeam(@Valid @ModelAttribute("team") Team team, BindingResult result, @ModelAttribute("mascot") Mascot mascot, Model viewModel, @PathVariable("id") Long id, RedirectAttributes rdAttr) {
 		if(result.hasErrors()) {
 			viewModel.addAttribute("team", this.tService.getOneTeam(id));
 			return "show.jsp";
@@ -121,6 +152,10 @@ public class HomeController {
 		return "redirect:/";
 	}
 	
+	@GetMapping("/test")
+	public String test() {
+		return "test.jsp";
+	}
 	
 	@GetMapping("/like/{teamId}")
 	public String like(@PathVariable("teamId") Long teamId, HttpSession session) {

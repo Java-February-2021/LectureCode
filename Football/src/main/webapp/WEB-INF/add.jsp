@@ -28,6 +28,7 @@
 <form:input path="players"/></form:label>
 </div>
 <button>Add Team!</button>
+
 </form:form>
 <hr>
 <h3>Html way For Adding Teams</h3>
